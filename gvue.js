@@ -62,6 +62,7 @@ function defineReactive(obj, key, val) {
       if (Dep.target) {
         dep.addDep(Dep.target)
         if (Array.isArray(val)) {
+          val.__proto__ = arrayMethods
           val.__ob__ = dep
           console.log(val)
         }
