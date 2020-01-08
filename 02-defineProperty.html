@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>Document</title>
+  </head>
+  <body>
+    <div id="app"></div>
+    <script>
+      function defineReactive(obj, key, val) {
+        observe(val)
+
+        Object.defineProperty(obj, key, {
+          enumerable: true,
+          configurable: true,
+          get() {
+            console.log(`get ${key} value: ${val}`)
+            return val
+          },
+          set(newVal) {
+            console.log(`set ${key} value: ${newVal}`)
+            if (newVal !== val) {
+              val = newVal
+            }
+            if (newVal !== null && typeof newVal === 'object') {
+              defineReactive(obj, key, newVal)
+            }
+            changeText(newVal)
+          }
+        })
+      }
+
+      function observe(obj) {
+        console.log('obj', obj)
+        if (typeof obj !== 'object' || obj === null) {
+          return
+        }
+
+        Object.keys(obj).forEach(key => {
+          defineReactive(obj, key, obj[key])
+        })
+      }
+
+      const app = document.getElementById('app')
+      function changeText(val) {
+        console.log('change')
+        app.innerHTML = val
+      }
+
+      const obj = { message: 'rick' }
+      observe(obj)
+      obj.message
+      obj.message = 'asdas'
+    </script>
+  </body>
+</html>
