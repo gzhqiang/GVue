@@ -12,6 +12,7 @@
       <p>{{counter}}</p>
       <p>{{counter}}</p>
       <p>{{counter}}</p>
+      <p>{{arr}}</p>
       <!-- 指令 -->
       <p g-text="counter"></p>
       <p g-html="desc"></p>
@@ -24,12 +25,16 @@
         el: '#app',
         data: {
           counter: 1,
-          desc: '<span style="color:red">gvue可还行？</span>'
+          desc: '<span style="color:red">gvue可还行？</span>',
+          arr: [1, 2, 3, 4]
         }
       })
-      setInterval(() => {
-        app.counter++
-      }, 1000)
+      arrayMethods.push.call(app.arr, 5)
+      arrayMethods.reverse.call(app.arr, 5)
+      // app.arr = [111, 2312]
+      // setInterval(() => {
+      //   app.counter++
+      // }, 1000)
     </script>
   </body>
 </html>
