@@ -24,12 +24,11 @@ const arrayProto = Array.prototype
 const arrayMethods = Object.create(arrayProto)
 
 methodsToPatch.forEach(method => {
-  const original = arrayProto[method]
   def(arrayMethods, method, function() {
     let args = [],
       len = arguments.length
     while (len--) args[len] = arguments[len]
-    const result = original.apply(this, args)
+    arrayProto[method].apply(this, args)
     let inserted
     switch (method) {
       case 'push':
@@ -41,7 +40,7 @@ methodsToPatch.forEach(method => {
         break
     }
     // console.log('dep', this.__ob__.dep)
-    this.__ob__.notify()
+    this.__ob__.dep.notify()
     // if (inserted) {
     //   observeArray(this, inserted)
     // }
@@ -58,13 +57,12 @@ function defineReactive(obj, key, val) {
     configurable: true,
     get() {
       console.log(`get ${key} value: ${val}`)
-      // Dep.target && dep.addDep(Dep.target)
+      Dep.target && dep.addDep(Dep.target)
       if (Dep.target) {
-        dep.addDep(Dep.target)
         if (Array.isArray(val)) {
-          val.__proto__ = arrayMethods
-          val.__ob__ = dep
-          console.log(val)
+          val.__ob__.dep.addDep(Dep.target)
+        } else {
+          dep.addDep(Dep.target)
         }
       }
       return val
@@ -84,16 +82,13 @@ function defineReactive(obj, key, val) {
 
 class Observer {
   constructor(data) {
-    /*     if (Array.isArray(data)) {
-      // this.dep = new Dep()
-      // data.__proto__.dep = dep
-      // def(data, '__ob__', this)
-      // arrayMethods.push.call(data, 5)
-      // 那么到哪里添加watcher呢
+    if (Array.isArray(data)) {
+      this.dep = new Dep()
+      def(data, '__ob__', this)
+      data.__proto__ = arrayMethods
     } else {
-      
-    } */
-    this.walk(data)
+      this.walk(data)
+    }
   }
 
   walk(data) {
